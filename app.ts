@@ -3,11 +3,11 @@ require("express-async-errors");
 
 const express = require("express");
 const app = express();
-
 const connectDb = require("./db/connect");
 
-app.use(express.json());
 const authRouter = require("./routes/auth");
+
+app.use(express.json());
 
 app.use("/api/v1/auth", authRouter);
 
@@ -20,9 +20,3 @@ app.use("/api/v1/auth", authRouter);
     console.log(e);
   }
 })();
-
-declare namespace Express {
-  interface Request {
-    user: object;
-  }
-}

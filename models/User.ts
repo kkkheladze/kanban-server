@@ -20,10 +20,6 @@ const userSchema = new mongoose.Schema({
     type: String,
     require: [true, "Must provide a password"],
   },
-  token: {
-    type: String,
-    default: true,
-  },
 });
 
 module.exports = mongoose.model("user", userSchema);

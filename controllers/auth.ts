@@ -18,10 +18,13 @@ const login = async (req: Request, res: Response) => {
       { user_id: user._id, email },
       process.env.JWT_SECRET!,
       {
-        expiresIn: "2h",
+        expiresIn: process.env.JWT_EXPIRATION_TIME,
       }
     );
-    res.status(200).json(user);
+    res
+      .cookie("access_token", user.token, { httpOnly: true })
+      .status(200)
+      .json(user);
   } else {
     res.status(400).send("Invalid credentials");
   }
@@ -30,7 +33,7 @@ const login = async (req: Request, res: Response) => {
 const register = async (req: Request, res: Response) => {
   const { first_name, last_name, email, password } = req.body;
   if (!(first_name && last_name && email && password)) {
-    return res.status(400).set("All inputs are required");
+    return res.status(400).send("All inputs are required");
   }
 
   const oldUser = await User.findOne({
@@ -50,10 +53,12 @@ const register = async (req: Request, res: Response) => {
   });
 
   user.token = jwt.sign({ user_id: user._id, email }, process.env.JWT_SECRET!, {
-    expiresIn: "2m",
+    expiresIn: process.env.JWT_EXPIRATION_TIME,
   });
-
-  res.status(201).json(user);
+  res
+    .cookie("access_token", user.token, { httpOnly: true })
+    .status(200)
+    .json(user);
 };
 
 module.exports = { login, register };
