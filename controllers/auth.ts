@@ -11,7 +11,7 @@ const login = async (req: Request, res: Response) => {
     return res.status(400).send("All inputs are required");
   }
   const user = await User.findOne({ email });
-  const passwordsMatch = await bcrypt.compare(password, user.password);
+  const passwordsMatch = await bcrypt.compare(password, user?.password);
 
   if (user && passwordsMatch) {
     user["_doc"].token = jwt.sign(
