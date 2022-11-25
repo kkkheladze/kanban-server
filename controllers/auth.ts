@@ -14,17 +14,14 @@ const login = async (req: Request, res: Response) => {
   const passwordsMatch = await bcrypt.compare(password, user.password);
 
   if (user && passwordsMatch) {
-    user.token = jwt.sign(
+    user["_doc"].token = jwt.sign(
       { user_id: user._id, email },
       process.env.JWT_SECRET!,
       {
         expiresIn: process.env.JWT_EXPIRATION_TIME,
       }
     );
-    res
-      .cookie("access_token", user.token, { httpOnly: true })
-      .status(200)
-      .json(user);
+    res.status(200).json(user);
   } else {
     res.status(400).send("Invalid credentials");
   }
@@ -52,13 +49,14 @@ const register = async (req: Request, res: Response) => {
     password: encryptedPassword,
   });
 
-  user.token = jwt.sign({ user_id: user._id, email }, process.env.JWT_SECRET!, {
-    expiresIn: process.env.JWT_EXPIRATION_TIME,
-  });
-  res
-    .cookie("access_token", user.token, { httpOnly: true })
-    .status(200)
-    .json(user);
+  user["_doc"].token = jwt.sign(
+    { user_id: user._id, email },
+    process.env.JWT_SECRET!,
+    {
+      expiresIn: process.env.JWT_EXPIRATION_TIME,
+    }
+  );
+  res.status(200).json(user);
 };
 
 module.exports = { login, register };
